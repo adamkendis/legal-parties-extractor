@@ -3,6 +3,8 @@ from partyparser.models import CourtCase
 
 app = create_app()
 
+from partyparser import routes
+
 
 @app.shell_context_processor
 def make_shell_context():
