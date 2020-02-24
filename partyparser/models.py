@@ -4,13 +4,12 @@ from partyparser import db
 class CourtCase(db.Model):
     __tablename__ = 'courtcase'
     id = db.Column(db.Integer, primary_key=True)
-    plaintiff = db.Column(db.Text)
-    defendant = db.Column(db.Text)
-    # plaintiff = db.relationship('Plaintiff', backref='case', lazy=True)
-    # defendant = db.relationship('Defendant', backref='case', lazy=True)
+    plaintiff = db.Column(db.Text, nullable=False)
+    defendant = db.Column(db.Text, nullable=False)
 
     def __repr__(self):
-        return '<{} Plaintiff(s): {}, Defendant(s): {}>'.format(self.__tablename__, self.plaintiff, self.defendant)
+        return '<{} Plaintiff(s): {}, Defendant(s): {}>'.format(
+            self.__tablename__, self.plaintiff, self.defendant)
 
 
 # class BaseParty(db.Model):
@@ -19,7 +18,8 @@ class CourtCase(db.Model):
 #     name = db.Column(db.Text, nullable=False)
 
 #     def __repr__(self, tablename):
-#         return '<{} {}, id: {}>'.format(self.__tablename__, self.name, self.id)
+        # return '<{} {}, id: {}>'.format(
+        #     self.__tablename__, self.name, self.id)
 
 
 # class Plaintiff(BaseParty):
