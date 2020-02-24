@@ -1,0 +1,1 @@
+from partyparser import app
