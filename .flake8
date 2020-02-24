@@ -1,0 +1,7 @@
+[flake8]
+ignore = E402
+exclude =
+	venv/,
+	__pycache__,
+	migrations/
+max-line-length = 79
