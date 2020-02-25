@@ -10,6 +10,7 @@ from xml.etree import ElementTree as ET
 # Local app imports
 from partyparser import create_app, db
 from partyparser.models import CourtCase
+from partyparser.helpers import verify_file_type
 from config import TestConfig
 
 
