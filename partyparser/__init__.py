@@ -3,16 +3,22 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from config import Config
 
+# Globally accessible libraries
 db = SQLAlchemy()
-migrate = Migrate()
+# compare_type=True so flask-migrate tracks column type changes
+migrate = Migrate(compare_type=True)
 
 
 def create_app(config_class=Config):
+    """Application factory returns Flask application object"""
     app = Flask(__name__)
-    # Initialize settings
     app.config.from_object(config_class)
     db.init_app(app)
-    migrate.init_app(app, db, compare_type=True)
+    migrate.init_app(app, db)
+
+    from .routes import home_bp
+    app.register_blueprint(home_bp)
+
     return app
 
 
