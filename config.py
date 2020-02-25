@@ -2,6 +2,7 @@ from os import environ, path
 
 base_dir = path.abspath(path.dirname(__file__))
 
+
 # Base Config class
 class Config(object):
 
@@ -12,6 +13,7 @@ class Config(object):
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     SECRET_KEY = 'zebra-unicorn-elephant-some-long-string-of-animals'
     UPLOAD_FOLDER = path.join(base_dir, 'partyparser', 'uploads')
+
 
 class TestConfig(Config):
 
