@@ -111,6 +111,17 @@ class WebInterfaceRoutesTests(TestCase):
             self.assertTrue(path.isfile(self.test_file_path),
                             'Should save xml file to uploads dir')
 
+    def test_verify_file_type_success(self):
+        """Return True if filename has allowed extension"""
+        result = verify_file_type(self.test_file)
+        self.assertTrue(result)
+
+    def test_verify_file_type_reject(self):
+        """Return False if filename does not have allowed extension"""
+        result = verify_file_type('some_random_file.jpeg')
+        self.assertFalse(result)
+
+
 
 if __name__ == '__main__':
     unittest.main(verbosity=2)
