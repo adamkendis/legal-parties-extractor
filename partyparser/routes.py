@@ -1,8 +1,14 @@
 # Standard library imports
-from flask import Blueprint, render_template, request
+import os
+
+# Third party imports
+from flask import Blueprint, current_app, render_template, \
+    request, jsonify
+from werkzeug.utils import secure_filename
 
 # Local app imports
 from partyparser.models import CourtCase
+from partyparser.helpers import verified_file_type
 
 home_bp = Blueprint('home_bp', __name__,
                     template_folder='templates')
@@ -24,10 +30,36 @@ def handle_cases():
     if request.method == 'GET':
         cases = CourtCase.query.all()
         return render_template('index.html', title=title, cases=cases)
+    if request.method == 'POST':
+        if 'file' not in request.files:
+            res = jsonify({'message': 'No file part in request.'})
+            res.status_code = 400
+            return res
+        file = request.files['file']
+        if file.filename == '':
+            res = jsonify({'message': 'No file uploaded.'})
+            res.status_code = 400
+            return res
+        if file and verified_file_type(file.filename):
+            filename = secure_filename(file.filename)
+            file.save(os.path.join(
+                current_app.config['UPLOAD_FOLDER'], filename))
+            res = jsonify({'message': 'File uploaded.'})
+            res.status_code = 201
+            return res
+        else:
+            res = jsonify({'message': 'Allowed file type is xml'})
+            res.status_code = 400
+            return res
 
 
 @web_bp.route('/web/cases/<int:case_id>', methods=['GET'])
 def get_case(case_id):
     title = 'XML Parser'
     case = CourtCase.query.get(case_id)
-    return render_template('index.html', title=title, cases=case)
+    if case is not None:
+        return render_template('index.html', title=title, cases=case)
+    else:
+        res = jsonify({'message': 'Case does not exist.'})
+        res.status_code = 404
+        return res
