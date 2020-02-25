@@ -8,8 +8,8 @@ class CourtCase(db.Model):
     defendant = db.Column(db.Text, nullable=False)
 
     def __repr__(self):
-        return '<{} Plaintiff(s): {}, Defendant(s): {}>'.format(
-            self.__tablename__, self.plaintiff, self.defendant)
+        return '<{} id: {} Plaintiffs: {}, Defendants: {}>'.format(
+            self.__tablename__, self.id, self.plaintiff, self.defendant)
 
 
 # class BaseParty(db.Model):

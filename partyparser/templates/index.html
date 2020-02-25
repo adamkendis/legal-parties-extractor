@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title> {{ title }} </title>
+  </head>
+  <body>
+    <div class="form-container">
+      <form 
+        action="http://localhost:5000/index" 
+        method="POST"
+        enctype="multipart/form-data"
+      >
+        <input type="file" name="file"/>
+        <input type="submit"/>
+      </form>
+    </div>
+    <div>
+      <ul>
+        {% for case in cases %}
+          <li class='case'><{{ case }}/li>
+        {% endfor %}
+      </ul>
+    </div>
+  </body>
+</html>
