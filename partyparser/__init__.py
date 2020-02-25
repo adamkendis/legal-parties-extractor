@@ -19,6 +19,9 @@ def create_app(config_class=Config):
     from .routes import home_bp
     app.register_blueprint(home_bp)
 
+    from .routes import web_bp
+    app.register_blueprint(web_bp)
+
     return app
 
 
