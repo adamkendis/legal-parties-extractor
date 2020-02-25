@@ -63,6 +63,18 @@ class WebInterfaceRoutesTests(TestCase):
         self.assert_template_used('index.html')
         self.assertEqual(self.get_context_variable('cases'), db_cases)
 
+    def test_get_to_web_cases_id(self):
+        """Test GET to /web/cases/<int:case_id> returns single case"""
+        self.seed_db()
+        case_id = 2
+        db_case = CourtCase.query.get(case_id)
+        print(db_case)
+        res = self.client.get('/web/cases/{}'.format(case_id))
+        self.assertEqual(res.status_code, 200,
+                         'GET to /web/cases/2 returns 200 status code')
+        self.assert_template_used('index.html')
+        self.assertEqual(self.get_context_variable('cases'), db_case)
+
 
 if __name__ == '__main__':
     unittest.main(verbosity=2)
