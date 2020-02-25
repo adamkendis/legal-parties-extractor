@@ -10,7 +10,7 @@ from xml.etree import ElementTree as ET
 # Local app imports
 from partyparser import create_app, db
 from partyparser.models import CourtCase
-from partyparser.helpers import verify_file_type
+from partyparser.helpers import verified_file_type
 from config import TestConfig
 
 
@@ -35,7 +35,7 @@ class WebInterfaceRoutesTests(TestCase):
     def tearDown(self):
         db.session.remove()
         db.drop_all()
-        self.remove_test_xml_file()
+        self.remove_test_xml_files()
 
     # Helper methods
     def seed_db(self):
@@ -57,10 +57,12 @@ class WebInterfaceRoutesTests(TestCase):
         with open(self.test_file, 'w'):
             tree.write(self.test_file)
 
-    def remove_test_xml_file(self):
-        # Deletes the file created by create_test_xml_file()
+    def remove_test_xml_files(self):
+        # Deletes test_xml files
         if path.exists(self.test_file):
             remove(self.test_file)
+        if path.isfile(self.test_file_path):
+            remove(self.test_file_path)
 
     def test_get_request_to_base_url(self):
         """Test GET request to base url returns 200 status code"""
@@ -98,30 +100,28 @@ class WebInterfaceRoutesTests(TestCase):
         self.assert_template_used('index.html')
         self.assertEqual(self.get_context_variable('cases'), db_case)
 
+    def test_verified_file_type_success(self):
+        """Return True if filename has allowed extension"""
+        result = verified_file_type(self.test_file)
+        self.assertTrue(result)
+
+    def test_verified_file_type_reject(self):
+        """Return False if filename does not have allowed extension"""
+        result = verified_file_type('some_random_file.jpeg')
+        self.assertFalse(result)
+
     def test_post_to_web_cases_saves_file(self):
         """Test POST with xml payload to /web/cases saves xml file on server"""
         self.create_test_xml_file()
-        data = {'name': 'Test'}
         with open(self.test_file, 'rb') as payload:
+            data = {'name': 'Test'}
             data['file'] = (payload, self.test_file)
             res = self.client.post(
-                '/web/cases', content_type='multipart/form-data', data=payload
-            )
+                '/web/cases', content_type='multipart/form-data', data=data)
             self.assertEqual(res.status_code, 201,
                              'Should return 201 status code')
             self.assertTrue(path.isfile(self.test_file_path),
                             'Should save xml file to uploads dir')
-
-    def test_verify_file_type_success(self):
-        """Return True if filename has allowed extension"""
-        result = verify_file_type(self.test_file)
-        self.assertTrue(result)
-
-    def test_verify_file_type_reject(self):
-        """Return False if filename does not have allowed extension"""
-        result = verify_file_type('some_random_file.jpeg')
-        self.assertFalse(result)
-
 
 
 if __name__ == '__main__':
