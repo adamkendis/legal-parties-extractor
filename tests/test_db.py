@@ -57,7 +57,7 @@ class CourtCaseModelTests(unittest.TestCase):
     def test_add_incomplete_courtcase(self):
         """Test creating courtcase with missing party raises error"""
         case = CourtCase(plaintiff=self.p1, defendant=None)
-        # defendant is a non-nullable field, so an IntegrityError should be raised
+        # defendant is non-nullable field, an IntegrityError should be raised
         with self.assertRaises(exc.IntegrityError):
             db.session.add(case)
             db.session.commit()

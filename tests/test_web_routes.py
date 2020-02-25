@@ -68,7 +68,6 @@ class WebInterfaceRoutesTests(TestCase):
         self.seed_db()
         case_id = 2
         db_case = CourtCase.query.get(case_id)
-        print(db_case)
         res = self.client.get('/web/cases/{}'.format(case_id))
         self.assertEqual(res.status_code, 200,
                          'GET to /web/cases/2 returns 200 status code')
