@@ -90,6 +90,19 @@ class ApiRoutesTests(TestCase):
         self.assertEqual(res.status_code, 404)
         self.assertEqual(res_json['message'], 'Case not found.')
 
+    def test_post_to_api_cases_saves_file(self):
+        """Test POST to /api/cases with xml payload saves xml on server"""
+        self.create_test_xml_file()
+        with open(self.test_file) as payload:
+            data = {}
+            data['file'] = (payload, self.test_file)
+            res = self.client.post(
+                '/api/cases', content_type='application/xml', data=data)
+            self.assertEqual(res.status_code, 201,
+                             'Should return 201 status code')
+            self.assertTrue(path.isfile(self.test_file_path),
+                            'Should save xml file to uploads dir')
+
 
 if __name__ == '__main__':
     unittest.main(verbosity=2)
