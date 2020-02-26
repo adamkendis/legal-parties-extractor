@@ -76,3 +76,14 @@ def handle_api_cases():
         res = jsonify(formatted_cases)
         res.status_code = 200
         return res
+
+@api_bp.route('/api/cases/<int:case_id>', methods=['GET'])
+def get_api_case(case_id):
+    title = 'XML Parser'
+    case = CourtCase.query.get(case_id)
+    if case is not None:
+        formatted_case = format_case(case)
+        res = jsonify(formatted_case)
+        res.status_code = 200
+        return res
+
