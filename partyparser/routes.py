@@ -76,6 +76,28 @@ def handle_api_cases():
         res = jsonify(formatted_cases)
         res.status_code = 200
         return res
+    if request.method == 'POST':
+        if 'file' not in request.files:
+            res = jsonify({'message': 'No file part in request.'})
+            res.status_code = 400
+            return res
+        file = request.files['file']
+        if file.filename == '':
+            res = jsonify({'message': 'No file uploaded.'})
+            res.status_code = 400
+            return res
+        if file and verified_file_type(file.filename):
+            filename = secure_filename(file.filename)
+            file.save(os.path.join(
+                current_app.config['UPLOAD_FOLDER'], filename))
+            # PLACE XML PARSING LOGIC HERE, UPDATE RESPONSE AFTER
+            res = jsonify({'message': 'File uploaded.'})
+            res.status_code = 201
+            return res
+        else:
+            res = jsonify({'message': 'Allowed file type is xml'})
+            res.status_code = 400
+            return res
 
 @api_bp.route('/api/cases/<int:case_id>', methods=['GET'])
 def get_api_case(case_id):
