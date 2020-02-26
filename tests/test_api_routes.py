@@ -71,7 +71,7 @@ class ApiRoutesTests(TestCase):
                          'GET to /api/cases should return 200 status code')
         self.assertEqual(len(res_json), 2)
 
-    def test_get_to_api_cases_id(self):
+    def test_get_to_api_cases_id_success(self):
         """Test GET to /api/cases/:id returns single courtcase as JSON"""
         case_id = 2
         db_case = CourtCase.query.get(2)
@@ -81,6 +81,14 @@ class ApiRoutesTests(TestCase):
         self.assertEqual(res.status_code, 200,
                          'GET to /api/cases/:id should return 200 status code')
         self.assertEqual(res_json, formatted_case)
+
+    def test_get_to_api_cases_id_failure(self):
+        """Test GET to /api/cases/:id returns 404 if id does not exist"""
+        case_id = 100
+        res = self.client.get('/api/cases/{}'.format(case_id))
+        res_json = res.get_json()
+        self.assertEqual(res.status_code, 404)
+        self.assertEqual(res_json.message, 'Case not found.')
 
 
 if __name__ == '__main__':
