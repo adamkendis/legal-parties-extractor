@@ -72,7 +72,7 @@ def handle_api_cases():
         return res
     if request.method == 'POST':
         error = None
-        file = request.files['file'] if request.files  else None
+        file = request.files['file'] if request.files else None
         if 'file' not in request.files:
             error = 'No file in request.'
         elif file.filename == '':

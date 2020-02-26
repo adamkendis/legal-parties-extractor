@@ -25,4 +25,4 @@ def create_app(config_class=Config):
     return app
 
 
-from partyparser import models
+from partyparser import models  # noqa: F401

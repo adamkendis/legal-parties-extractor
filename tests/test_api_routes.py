@@ -4,13 +4,12 @@ from os import path, remove
 
 # Third party imports
 from flask_testing import TestCase
-from flask import jsonify
 from xml.etree import ElementTree as ET
 
 # Local app imports
 from partyparser import create_app, db
 from partyparser.models import CourtCase
-from partyparser.helpers import verified_file_type, format_case
+from partyparser.helpers import format_case
 from config import TestConfig
 
 
