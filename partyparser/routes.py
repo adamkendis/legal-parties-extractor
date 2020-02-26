@@ -3,7 +3,7 @@ import os
 
 # Third party imports
 from flask import Blueprint, current_app, render_template, \
-    request, jsonify
+    request, jsonify, flash
 from werkzeug.utils import secure_filename
 
 # Local app imports
@@ -29,43 +29,41 @@ def handle_cases():
         cases = CourtCase.query.all()
         return render_template('index.html', cases=cases)
     if request.method == 'POST':
+        error = None
         if 'file' not in request.files:
-            res = jsonify({'message': 'No file part in request.'})
-            res.status_code = 400
-            return res
+            error = 'No file in request.'
         file = request.files['file']
+        # This will be True if user clicks Submit without selecting a file.
         if file.filename == '':
-            res = jsonify({'message': 'No file uploaded.'})
-            res.status_code = 400
-            return res
+            error = 'No file uploaded.'
+        # Valid xml file uploaded
         if file and verified_file_type(file.filename):
             filename = secure_filename(file.filename)
             file.save(os.path.join(
                 current_app.config['UPLOAD_FOLDER'], filename))
-            # PLACE XML PARSING LOGIC HERE, UPDATE RESPONSE AFTER
-            res = jsonify({'message': 'File uploaded.'})
-            res.status_code = 201
-            return res
-        else:
-            res = jsonify({'message': 'Allowed file type is xml'})
-            res.status_code = 400
-            return res
+            # PARSING LOGIC HERE!!
+            return render_template('index.html', error=error), 201
+        # Disallowed file type uploaded by user
+        if not error:
+            error = 'Allowed file type is xml.'
+        flash(error)
+        return render_template('index.html'), 400
 
 
 @web_bp.route('/web/cases/<int:case_id>', methods=['GET'])
 def get_case(case_id):
-    title = 'XML Parser'
+    error = None
     case = CourtCase.query.get(case_id)
     if case is not None:
-        return render_template('index.html', title=title, cases=case)
+        return render_template('index.html', cases=case)
     else:
-        res = jsonify({'message': 'Case does not exist.'})
-        res.status_code = 404
-        return res
+        error = 'Case does not exist.'
+        flash(error)
+        return render_template('index.html'), 400
+
 
 @api_bp.route('/api/cases', methods=['GET', 'POST'])
 def handle_api_cases():
-    title = 'XML Parser'
     if request.method == 'GET':
         cases = CourtCase.query.all()
         formatted_cases = [format_case(case) for case in cases]
@@ -95,9 +93,9 @@ def handle_api_cases():
             res.status_code = 400
             return res
 
+
 @api_bp.route('/api/cases/<int:case_id>', methods=['GET'])
 def get_api_case(case_id):
-    title = 'XML Parser'
     case = CourtCase.query.get(case_id)
     if case is not None:
         formatted_case = format_case(case)
