@@ -88,7 +88,7 @@ class ApiRoutesTests(TestCase):
         res = self.client.get('/api/cases/{}'.format(case_id))
         res_json = res.get_json()
         self.assertEqual(res.status_code, 404)
-        self.assertEqual(res_json.message, 'Case not found.')
+        self.assertEqual(res_json['message'], 'Case not found.')
 
 
 if __name__ == '__main__':

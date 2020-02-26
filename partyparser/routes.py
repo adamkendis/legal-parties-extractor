@@ -86,4 +86,7 @@ def get_api_case(case_id):
         res = jsonify(formatted_case)
         res.status_code = 200
         return res
-
+    else:
+        res = jsonify({'message': 'Case not found.'})
+        res.status_code = 404
+        return res
