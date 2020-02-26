@@ -3,6 +3,10 @@ from partyparser import db
 
 class CourtCase(db.Model):
     __tablename__ = 'courtcase'
+
+    def __getitem__(self, field):
+        return self.__dict__[field]
+
     id = db.Column(db.Integer, primary_key=True)
     plaintiff = db.Column(db.Text, nullable=False)
     defendant = db.Column(db.Text, nullable=False)
