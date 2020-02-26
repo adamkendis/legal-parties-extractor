@@ -94,10 +94,11 @@ class WebInterfaceRoutesTests(TestCase):
         case_id = 2
         db_case = CourtCase.query.get(case_id)
         res = self.client.get('/web/cases/{}'.format(case_id))
+        cases = self.get_context_variable('cases')
         self.assertEqual(res.status_code, 200,
                          'GET to /web/cases/2 returns 200 status code')
         self.assert_template_used('index.html')
-        self.assertEqual(self.get_context_variable('cases'), db_case)
+        self.assertEqual(cases[0], db_case)
 
     def test_post_to_web_cases_saves_file(self):
         """Test POST with xml payload to /web/cases saves xml file on server"""

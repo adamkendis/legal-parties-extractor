@@ -55,7 +55,7 @@ def get_case(case_id):
     error = None
     case = CourtCase.query.get(case_id)
     if case is not None:
-        return render_template('index.html', cases=case)
+        return render_template('index.html', cases=[case])
     else:
         error = 'Case does not exist.'
         flash(error)
@@ -71,16 +71,13 @@ def handle_api_cases():
         res.status_code = 200
         return res
     if request.method == 'POST':
+        error = None
+        file = request.files['file'] if request.files  else None
         if 'file' not in request.files:
-            res = jsonify({'message': 'No file part in request.'})
-            res.status_code = 400
-            return res
-        file = request.files['file']
-        if file.filename == '':
-            res = jsonify({'message': 'No file uploaded.'})
-            res.status_code = 400
-            return res
-        if file and verified_file_type(file.filename):
+            error = 'No file in request.'
+        elif file.filename == '':
+            error = 'No file uploaded.'
+        elif file and verified_file_type(file.filename):
             filename = secure_filename(file.filename)
             file.save(os.path.join(
                 current_app.config['UPLOAD_FOLDER'], filename))
@@ -89,9 +86,10 @@ def handle_api_cases():
             res.status_code = 201
             return res
         else:
-            res = jsonify({'message': 'Allowed file type is xml'})
-            res.status_code = 400
-            return res
+            error = 'Allowed file type is xml.'
+        res = jsonify({'error': error})
+        res.status_code = 400
+        return res
 
 
 @api_bp.route('/api/cases/<int:case_id>', methods=['GET'])
