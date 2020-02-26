@@ -10,8 +10,6 @@ from werkzeug.utils import secure_filename
 from partyparser.models import CourtCase
 from partyparser.helpers import verified_file_type, format_case
 
-home_bp = Blueprint('home_bp', __name__,
-                    template_folder='templates')
 
 web_bp = Blueprint('web_bp', __name__,
                    template_folder='templates')
@@ -19,19 +17,17 @@ web_bp = Blueprint('web_bp', __name__,
 api_bp = Blueprint('api_bp', __name__)
 
 
-@home_bp.route('/')
-@home_bp.route('/index', methods=['GET'])
+@web_bp.route('/')
+@web_bp.route('/index', methods=['GET'])
 def index():
-    title = 'XML Parser'
-    return render_template('index.html', title=title)
+    return render_template('index.html')
 
 
 @web_bp.route('/web/cases', methods=['GET', 'POST'])
 def handle_cases():
-    title = 'XML Parser'
     if request.method == 'GET':
         cases = CourtCase.query.all()
-        return render_template('index.html', title=title, cases=cases)
+        return render_template('index.html', cases=cases)
     if request.method == 'POST':
         if 'file' not in request.files:
             res = jsonify({'message': 'No file part in request.'})
