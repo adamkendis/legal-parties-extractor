@@ -1,7 +1,6 @@
 # Standard library imports
 import unittest
 from os import path, remove
-import time
 
 # Third party imports
 from flask_testing import TestCase
@@ -10,7 +9,6 @@ from xml.etree import ElementTree as ET
 # Local app imports
 from partyparser import create_app, db
 from partyparser.models import CourtCase
-from partyparser.helpers import verified_file_type
 from config import TestConfig
 
 
@@ -28,6 +26,7 @@ class WebInterfaceRoutesTests(TestCase):
         self.test_file = 'test_file.xml'
         self.uploads_dir = path.join(self.app.root_path, 'uploads')
         self.test_file_path = path.join(self.uploads_dir, self.test_file)
+        # Test db is created in memory
         db.create_all()
         self.seed_db()
 
@@ -99,16 +98,6 @@ class WebInterfaceRoutesTests(TestCase):
                          'GET to /web/cases/2 returns 200 status code')
         self.assert_template_used('index.html')
         self.assertEqual(self.get_context_variable('cases'), db_case)
-
-    def test_verified_file_type_success(self):
-        """Return True if filename has allowed extension"""
-        result = verified_file_type(self.test_file)
-        self.assertTrue(result)
-
-    def test_verified_file_type_reject(self):
-        """Return False if filename does not have allowed extension"""
-        result = verified_file_type('some_random_file.jpeg')
-        self.assertFalse(result)
 
     def test_post_to_web_cases_saves_file(self):
         """Test POST with xml payload to /web/cases saves xml file on server"""
