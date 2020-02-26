@@ -10,8 +10,9 @@ from xml.etree import ElementTree as ET
 # Local app imports
 from partyparser import create_app, db
 from partyparser.models import CourtCase
-from partyparser.helpers import verified_file_type
+from partyparser.helpers import verified_file_type, format_case
 from config import TestConfig
+
 
 class ApiRoutesTests(TestCase):
     """Test suite for JSON API endpoints"""
@@ -33,7 +34,7 @@ class ApiRoutesTests(TestCase):
         db.drop_all()
         self.remove_test_xml_files()
 
-   # Helper methods
+    # Helper methods
     def seed_db(self):
         # Seeds test db with two CourtCases
         mock_data = [
@@ -64,12 +65,22 @@ class ApiRoutesTests(TestCase):
 
     def test_get_to_api_cases(self):
         """Test GET to /api/cases returns all courtcases as JSON"""
-        db_cases = CourtCase.query.all()
         res = self.client.get('/api/cases')
         res_json = res.get_json()
         self.assertEqual(res.status_code, 200,
                          'GET to /api/cases should return 200 status code')
         self.assertEqual(len(res_json), 2)
+
+    def test_get_to_api_cases_id(self):
+        """Test GET to /api/cases/:id returns single courtcase as JSON"""
+        case_id = 2
+        db_case = CourtCase.query.get(2)
+        formatted_case = format_case(db_case)
+        res = self.client.get('/api/cases/{}'.format(case_id))
+        res_json = res.get_json()
+        self.assertEqual(res.status_code, 200,
+                         'GET to /api/cases/:id should return 200 status code')
+        self.assertEqual(res_json, formatted_case)
 
 
 if __name__ == '__main__':
