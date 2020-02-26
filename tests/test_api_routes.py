@@ -66,10 +66,10 @@ class ApiRoutesTests(TestCase):
         """Test GET to /api/cases returns all courtcases as JSON"""
         db_cases = CourtCase.query.all()
         res = self.client.get('/api/cases')
+        res_json = res.get_json()
         self.assertEqual(res.status_code, 200,
                          'GET to /api/cases should return 200 status code')
-        self.assertEqual(len(res.data), 2)
-        self.assertIn(res.data, 'John Doe')
+        self.assertEqual(len(res_json), 2)
 
 
 if __name__ == '__main__':
