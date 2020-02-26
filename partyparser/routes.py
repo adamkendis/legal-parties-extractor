@@ -8,13 +8,15 @@ from werkzeug.utils import secure_filename
 
 # Local app imports
 from partyparser.models import CourtCase
-from partyparser.helpers import verified_file_type
+from partyparser.helpers import verified_file_type, format_case
 
 home_bp = Blueprint('home_bp', __name__,
                     template_folder='templates')
 
 web_bp = Blueprint('web_bp', __name__,
                    template_folder='templates')
+
+api_bp = Blueprint('api_bp', __name__)
 
 
 @home_bp.route('/')
@@ -44,6 +46,7 @@ def handle_cases():
             filename = secure_filename(file.filename)
             file.save(os.path.join(
                 current_app.config['UPLOAD_FOLDER'], filename))
+            # PLACE XML PARSING LOGIC HERE, UPDATE RESPONSE AFTER
             res = jsonify({'message': 'File uploaded.'})
             res.status_code = 201
             return res
@@ -62,4 +65,14 @@ def get_case(case_id):
     else:
         res = jsonify({'message': 'Case does not exist.'})
         res.status_code = 404
+        return res
+
+@api_bp.route('/api/cases', methods=['GET', 'POST'])
+def handle_api_cases():
+    title = 'XML Parser'
+    if request.method == 'GET':
+        cases = CourtCase.query.all()
+        formatted_cases = [format_case(case) for case in cases]
+        res = jsonify(formatted_cases)
+        res.status_code = 200
         return res
