@@ -1,14 +1,12 @@
 # Standard library imports
 import unittest
-from os import path, remove
 
 # Third party imports
-from flask import jsonify
 from flask_testing import TestCase
 
 # Local app imports
 from partyparser import create_app
-from partyparser.helpers import verified_file_type
+from partyparser.helpers import verified_file_type, format_case
 from config import TestConfig
 
 
