@@ -15,7 +15,7 @@ Ingests xml legal documents and outputs extracted plaintiff and defendant names.
 ### Requirements
 
 - Python3
-- sqlite3
+- sqlite
 
 ### Setup
 
@@ -23,15 +23,13 @@ Ingests xml legal documents and outputs extracted plaintiff and defendant names.
       git clone https://github.com/adamkendis/legal-parties-extractor.git
       cd legal-parties-extractor
 
-    # Run setup.sh (macOS) or setup.bat (Windows) to create a 
-    # virtual environment and install dependencies.
-      setup.sh
-    or for Windows:
-      setup.bat 
 
-    # Initialize the database. Creates a sqlite court_cases.db file 
-    # in the project's root directory.
-      flask db migrate
+    # Run setup script to create a virtual environment and install dependencies.
+      source setup.sh
+
+
+    # Initialize the database. Creates a sqlite court_cases.db file n the project's root directory.
+      flask db upgrade
 
   Setup complete!
 
