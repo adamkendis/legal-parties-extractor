@@ -15,6 +15,7 @@ Ingests xml legal documents and outputs extracted plaintiff and defendant names.
 ### Requirements
 
 - Python3
+- sqlite3
 
 ### Setup
 
