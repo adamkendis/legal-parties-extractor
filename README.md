@@ -8,8 +8,8 @@ Ingests xml legal documents and outputs extracted plaintiff and defendant names.
 - [Setup](#setup)
 - [Running the app](#running-the-app)
 - [Using the app](#using-the-app)
-- [Web Interface](#web-interface)
 - [JSON API](#json-api)
+- [Web Interface](#web-interface)
 - [Troubleshooting](#troubleshooting)
 
 ### Requirements
