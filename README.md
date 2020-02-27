@@ -1,8 +1,9 @@
 # Legal Parties Parser
 
-A simple REST API written in Python/Flask with an (extremely basic) web interface and JSON endpoints. Ingests xml legal documents and outputs extracted plaintiff and defendant names.
+A simple REST API written in Python/Flask with a very basic web interface and JSON endpoints. 
+Ingests xml legal documents and outputs extracted plaintiff and defendant names.
 
-#### Quick navigation
+#### Jump to section
 
 - [Setup](#setup)
 - [Running the app](#running-the-app)
@@ -41,17 +42,17 @@ A simple REST API written in Python/Flask with an (extremely basic) web interfac
     # To stop the server:
       CTRL + C
 
-### Using the app
+## Using the app
 
 The app has: 
   - Browser-accessible web interface endpoints serving up html.
   - JSON endpoints with no web interface if you prefer using curl or Postman.
 
-#### JSON API
+### JSON API
 
 See the [wiki](https://github.com/adamkendis/legal-parties-extractor/wiki/API-Reference) for API specification.
 
-#### Web Interface
+### Web Interface
 
 Point your browser to http://localhost:5000/
 
