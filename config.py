@@ -13,6 +13,7 @@ class Config(object):
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     SECRET_KEY = 'zebra-unicorn-elephant-some-long-string-of-animals'
     UPLOAD_FOLDER = path.join(base_dir, 'partyparser', 'uploads')
+    JSON_SORT_KEYS = False
 
 
 class TestConfig(Config):
