@@ -13,7 +13,7 @@ from config import TestConfig
 
 
 class WebInterfaceRoutesTests(TestCase):
-    """Test suite for web interface endpoints"""
+    """Test suite for web interface endpoints."""
 
     # Templates are tested via self.assert_template_used('template_name')
     render_templates = False

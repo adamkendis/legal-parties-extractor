@@ -14,7 +14,7 @@ from config import TestConfig
 
 
 class ApiRoutesTests(TestCase):
-    """Test suite for JSON API endpoints"""
+    """Test suite for JSON API endpoints."""
 
     def create_app(self):
         return create_app(TestConfig)

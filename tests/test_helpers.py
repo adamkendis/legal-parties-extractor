@@ -11,7 +11,7 @@ from config import TestConfig
 
 
 class HelperFunctionsTests(TestCase):
-    """Test suite for helper functions"""
+    """Test suite for helper functions."""
 
     def create_app(self):
         return create_app(TestConfig)

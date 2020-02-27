@@ -7,8 +7,10 @@ from flask import Blueprint, current_app, render_template, \
 from werkzeug.utils import secure_filename
 
 # Local app imports
+from partyparser import db
 from partyparser.models import CourtCase
-from partyparser.helpers import verified_file_type, format_case
+from partyparser.helpers import verified_file_type, format_case, \
+    extract_party_names
 
 
 web_bp = Blueprint('web_bp', __name__,
@@ -33,17 +35,31 @@ def handle_cases():
         if 'file' not in request.files:
             error = 'No file in request.'
         file = request.files['file']
-        # This will be True if user clicks Submit without selecting a file.
+        # Empty filename string if user clicks Submit without selecting a file.
         if file.filename == '':
-            error = 'No file uploaded.'
-        # Valid xml file uploaded
+            error = 'No file selected.'
         if file and verified_file_type(file.filename):
             filename = secure_filename(file.filename)
-            file.save(os.path.join(
-                current_app.config['UPLOAD_FOLDER'], filename))
-            # PARSING LOGIC HERE!!
-            return render_template('index.html', error=error), 201
-        # Disallowed file type uploaded by user
+            filepath = os.path.join(
+                current_app.config['UPLOAD_FOLDER'], filename)
+            file.save(filepath)
+            parties = extract_party_names(filepath)
+            if not parties:
+                error = 'Could not extract party names.'
+                flash(error)
+                return render_template('index.html'), 400
+            else:
+                new_case = CourtCase(
+                    plaintiff=parties['plaintiff'],
+                    defendant=parties['defendant'])
+                db.session.add(new_case)
+                db.session.commit()
+                flash("""New case added.
+                    ID: {}
+                    PLAINTIFF: {}
+                    DEFENDANT: {}""".format(
+                    new_case.id, new_case.plaintiff, new_case.defendant))
+                return render_template('index.html', error=error), 201
         if not error:
             error = 'Allowed file type is xml.'
         flash(error)
@@ -57,7 +73,7 @@ def get_case(case_id):
     if case is not None:
         return render_template('index.html', cases=[case])
     else:
-        error = 'Case does not exist.'
+        error = 'Case not found.'
         flash(error)
         return render_template('index.html'), 400
 
@@ -79,12 +95,25 @@ def handle_api_cases():
             error = 'No file uploaded.'
         elif file and verified_file_type(file.filename):
             filename = secure_filename(file.filename)
-            file.save(os.path.join(
-                current_app.config['UPLOAD_FOLDER'], filename))
-            # PLACE XML PARSING LOGIC HERE, UPDATE RESPONSE AFTER
-            res = jsonify({'message': 'File uploaded.'})
-            res.status_code = 201
-            return res
+            filepath = os.path.join(
+                current_app.config['UPLOAD_FOLDER'], filename)
+            file.save(filepath)
+            parties = extract_party_names(filepath)
+            if not parties:
+                error = 'Could not extract party names.'
+                res = jsonify({'error': error})
+                res.status_code = 400
+                return res
+            else:
+                new_case = CourtCase(
+                    plaintiff=parties['plaintiff'],
+                    defendant=parties['defendant'])
+                db.session.add(new_case)
+                db.session.flush()
+                res = jsonify(format_case(new_case))
+                res.status_code = 201
+                db.session.commit()
+                return res
         else:
             error = 'Allowed file type is xml.'
         res = jsonify({'error': error})

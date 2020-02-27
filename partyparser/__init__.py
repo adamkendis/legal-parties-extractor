@@ -1,6 +1,9 @@
+# Third party imports
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
+
+# Local app imports
 from config import Config
 
 # Globally accessible libraries

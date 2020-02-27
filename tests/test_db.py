@@ -11,7 +11,7 @@ from config import TestConfig
 
 
 class CourtCaseModelTests(unittest.TestCase):
-    """Test suite for CourtCase model db operations"""
+    """Test suite for CourtCase model db operations."""
 
     # Before each test method
     def setUp(self):
