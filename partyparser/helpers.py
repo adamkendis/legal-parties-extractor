@@ -2,6 +2,7 @@
 # import shutil
 # from time import sleep
 from bs4 import BeautifulSoup
+from collections import deque
 
 # from flask import current_app
 
@@ -14,6 +15,7 @@ def verified_file_type(filename):
 
 
 def format_case(case):
+    # Structure case for JSON response
     return {
         'type': 'courtcase',
         'id': case['id'],
@@ -25,47 +27,56 @@ def format_case(case):
 
 
 def extract_party_names(filepath):
+    # Receives an xml legal complaint facepage. Extracts plaintiff, defendant names.
     with open(filepath) as file:
         soup = BeautifulSoup(file, 'lxml')
         page_width = int(soup.find('page')['width'])
+        # max_left_boundary is set to 40% of total page width.
+        # Any tags with a left edge (provided by line tag 'l' attribute) in the
+        # left 40% of the page will be caught in line_tags below. This will
+        # capture attorney header, court name, case caption, complaint body on
+        # facepage, and possibly some other content depending on quality of OCR.
         max_left_boundary = page_width * .4
         defendant = deque()
         plaintiff = deque()
-        current_name = defendant
+        current_name = None
         defendant_complete = False
         line_tags = soup.find_all(
-            lambda tag:tag.name == 'line' and
+            lambda tag: tag.name == 'line' and
             'l' in tag.attrs and
             int(tag['l']) < max_left_boundary) 
-        lines = list(line_tags)
-        i = len(lines) - 1
-        while i >= 0:
-            text = lines[i].text.strip()
+        lines = list(reversed(line_tags))
+        # Iterate through rows of text from bottom up. Defendant will be built first.
+        for i, line in enumerate(lines):
+            text = line.text.strip()
             first_word = text.split()[0]
-            if 'county of' in text.lower() and 'superior court' in lines[i-1].text.lower():
-                plaintiff.pop()
-                defendant.pop()
+            # Courtname header reached, both party names complete.
+            if 'county of' in text.lower() and 'superior court' in lines[i + 1].text.lower():
                 return({ 'plaintiff': ' '.join(plaintiff), 'defendant': ' '.join(defendant) })
+            # Begin building defendant name from the bottom up.
             if 'defendant' in first_word.lower():
-                defendant.appendleft(first_word)
-                i -= 1
+                current_name = defendant
                 continue
+            # Begin building plaintiff name from the bottom up.
             if defendant_complete and 'plaintiff' in first_word.lower():
-                plaintiff.appendleft(first_word)
-                i -=1
-                continue
-            if len(current_name) and first_word not in ['v', 'v.', 'vs', 'vs.']:
-                trimmed_text = text.split('   ')[0]
-                current_name.appendleft(trimmed_text)
-                i -=1
-                continue
-            elif len(defendant):
                 current_name = plaintiff
-                defendant_complete = True
-                i -=1
-            else:
-                i -=1
                 continue
+            # current_name has been initialized and current line is not the party divider.
+            if current_name is not None and first_word not in ['v', 'v.', 'vs', 'vs.']:
+                # Split on whitespace of 4 characters or greater.
+                # 4 characters or greater will (hopefully) not cut off any part of a party name
+                # but may help isolate and eliminate unwanted characters resulting from OCR.
+                trimmed_text = text.split('   ')[0]
+                if not len(current_name) and trimmed_text[-1] in [',', ';', "'"]:
+                    # Remove comma, semicolon or apostrophe
+                    trimmed_text = trimmed_text[:-1].strip()
+                current_name.appendleft(trimmed_text)
+                continue
+            # Defendant deque has some content and caption divider reached indicating
+            # defendant name is complete.
+            if len(defendant):
+                defendant_complete = True
+
 
 
 # def remove_uploads():
