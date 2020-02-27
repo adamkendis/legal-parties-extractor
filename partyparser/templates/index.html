@@ -4,22 +4,49 @@
     <title> {{ title }} </title>
   </head>
   <body>
+    <div id="flashed-messages-container">
+      {% with messages = get_flashed_messages() %}
+        {% if messages %}
+          <ul class=flashes>
+            {% for message in messages %}
+              <li>{{ message }}</li>
+            {% endfor %}
+          </ul>
+        {% endif %}
+      {% endwith %}
+    </div>
     <div class="form-container">
       <form 
-        action="http://localhost:5000/index" 
+        action="http://localhost:5000/web/cases"
         method="POST"
         enctype="multipart/form-data"
       >
-        <input type="file" name="file"/>
+        <div>
+          <div>
+            <label>Select XML file to upload</label>
+          </div>
+          <input type="file" name="file" id="file-input"/>
+        </div>
         <input type="submit"/>
       </form>
     </div>
     <div>
-      <ul>
-        {% for case in cases %}
-          <li class='case'><{{ case }}/li>
-        {% endfor %}
-      </ul>
+      {% if cases is defined %}
+        {% if cases %}
+          Cases:
+          <ul>
+            {% for case in cases %}
+              <li class='case'>
+                ID: {{case['id']}}
+                PLAINTIFF: {{case['plaintiff']}}
+                DEFENDANT: {{case['defendant']}}
+              </li>
+            {% endfor %}
+          </ul>
+        {% else %}
+          <span>No cases have been stored to the database.</span>
+        {% endif %}
+      {% endif %}
     </div>
   </body>
 </html>
