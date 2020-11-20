@@ -1,6 +1,6 @@
 # Legal Parties Extractor
 
-A simple REST API written in Python/Flask with a very basic web interface and JSON endpoints. 
+A simple REST API written in Python/Flask with a basic web interface and JSON endpoints. 
 Ingests xml legal documents and outputs extracted plaintiff and defendant names.
 
 #### Jump to section
