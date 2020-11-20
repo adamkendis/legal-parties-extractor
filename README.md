@@ -28,7 +28,7 @@ Ingests xml legal documents and outputs extracted plaintiff and defendant names.
       source setup.sh
 
 
-    # Initialize the database. Creates a sqlite court_cases.db file n the project's root directory.
+    # Initialize the database. Creates a sqlite court_cases.db file in the project's root directory.
       flask db upgrade
 
   Setup complete!
